@@ -136,6 +136,7 @@ Testes e medições, todos contra o servidor rodando:
 | `tools/text_check.py` | os 3 controles NLI (entailment / contradiction / neutral) e o custo por chamada |
 | `tools/bench_server.py` | custo de 1, 6 e 19 sequências no lote (é o número que decide o UX do chat) |
 | `tools/check_gguf.py` | metadados do GGUF contra os tensores do checkpoint (blocos, hidden, ffn, ctx) |
+| `tools/vision_remote_diag.py` | servidor remoto: `/props`, o marcador, e o corpo do erro quando a imagem falha |
 | `tools/test_api_key.py` | cliente com e sem bearer token contra um `llama-server --api-key` |
 | `tools/vision_sanity.py` | o frame realmente influencia a decisão (duas imagens bem diferentes) |
 | `jev/chat_test.py` | acerto das intenções em pt-BR e inglês (29 casos) |
@@ -175,7 +176,10 @@ O contrato são duas rotas, nada mais:
 * com visão: `{"prompt_string": "... <media_marker> ...", "multimodal_data": ["<png em base64>"]}`
 
 Quem serve precisa do mesmo GGUF + mmproj e sobe com `--embeddings --pooling none -b/--ub` grande o bastante para um
-prompt com imagem e sem esquecer `--api-key`. Do lado do agente:
+prompt com imagem e sem esquecer `--api-key`. Duas armadilhas de rede: proxy com Cloudflare na frente bloqueia
+User-Agent de `urllib` (erro `1010`, o cliente manda `GINOmoto/1.0` por isso) e o `media_marker` tem que ser lido do
+`/props` **depois** de a chave estar carregada, senão a requisição com imagem volta 500 pedindo o marcador. Do lado do
+agente:
 
 ```sh
 SERVER_URL=http://outra-maquina:8099 API_KEY=segredo scripts/run-agent.sh
@@ -212,7 +216,7 @@ jev/vision.py         frases sobre o frame + política de direção
 jev/agent.py          o NPC: laço principal, fila de skills, interrupção, dashboard
 jev/mc.py             cliente do skill server (+ serviço de frame)
 tools/convert_jev.py  checkpoint HF → GGUF + mmproj + cabeça npz
-tools/                checagens e medições (ver tabela acima)
+tools/                checagens e medições (ver tabela acima); seed.py + magnet.py geram o torrent do checkpoint
 scripts/              build-llama.sh, run-jev-server.sh, run-agent.sh, shim-canvas.sh, tunnel.sh
 ```
 

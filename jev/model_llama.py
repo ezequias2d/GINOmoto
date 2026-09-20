@@ -36,9 +36,9 @@ class JevGGUF:
         self.W = z["score_weight"].astype(np.float32)          # (3, hidden)
         self.labels = [str(x) for x in z["labels"]]
         self.url, self.template, self.timeout = url.rstrip("/"), template, timeout
+        self.api_key = api_key            # before the /props call: the headers need it
         self.marker = self._fetch_marker()  # llama-server randomises it per process; /props publishes it
         self.calls, self.secs, self.load_s, self.bs_img = 0, 0.0, 0.0, bs_img
-        self.api_key = api_key
         self.patch_embed_patched = False
 
     def _fetch_marker(self) -> str:
@@ -51,7 +51,8 @@ class JevGGUF:
 
     # ------------------------------------------------------------------ transport
     def _headers(self):
-        h = {"content-type": "application/json"}
+        # a plain urllib User-Agent gets 403 "error code: 1010" from Cloudflare in front of a remote server, so identify
+        h = {"content-type": "application/json", "user-agent": "GINOmoto/1.0"}
         if self.api_key:                      # llama-server --api-key: for a jev served by somebody else
             h["authorization"] = f"Bearer {self.api_key}"
         return h

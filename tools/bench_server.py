@@ -9,18 +9,29 @@ import urllib.request
 
 URL = "http://127.0.0.1:8099/embedding"
 TPL = "Premise: {p}\nHypothesis: {h}"
+HEADERS = {"content-type": "application/json", "user-agent": "GINOmoto/1.0"}
 
 
 def post(content, timeout=1800):
-    req = urllib.request.Request(URL, data=json.dumps({"content": content}).encode(), headers={"content-type": "application/json"})
+    req = urllib.request.Request(URL, data=json.dumps({"content": content}).encode(), headers=HEADERS)
     t0 = time.perf_counter()
     r = json.loads(urllib.request.urlopen(req, timeout=timeout).read())
     return r, time.perf_counter() - t0
 
 
 def main():
+    global URL
     sys.path.insert(0, str(__import__("pathlib").Path(__file__).resolve().parents[1]))
+    import argparse
     from jev.chat import INTENTS, PREMISE  # noqa: E402
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--server-url", default="http://127.0.0.1:8099")
+    ap.add_argument("--api-key", default="")
+    args = ap.parse_args()
+    URL = args.server_url.rstrip("/") + "/embedding"
+    if args.api_key:
+        HEADERS["authorization"] = f"Bearer {args.api_key}"
+    print("servidor:", URL, flush=True)
 
     msg = "pega madeira pra mim"
     premise = PREMISE.format(msg=msg)

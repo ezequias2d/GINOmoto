@@ -16,7 +16,13 @@ CONTROLS = [("A man is playing a guitar.", "Someone is making music.", "entailme
 
 
 def main():
-    jev = JevGGUF()
+    import argparse
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--server-url", default="http://127.0.0.1:8099", help="llama-server with --embeddings --pooling none")
+    ap.add_argument("--api-key", default="", help="bearer token, if the server was started with --api-key")
+    args = ap.parse_args()
+    jev = JevGGUF(url=args.server_url, api_key=args.api_key)
+    print(f"servidor: {args.server_url}", flush=True)
     p = jev.probs("A man is playing a guitar.", [h for _, h, _ in CONTROLS])
     ok = 0
     for (_, h, gold), row in zip(CONTROLS, p):
