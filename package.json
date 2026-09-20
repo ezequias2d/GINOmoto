@@ -1,0 +1,24 @@
+{
+  "name": "ginomoto",
+  "version": "1.0.0",
+  "description": "Minecraft NPC driven by a local NLI cross-encoder (Qwen3.5-4B \"jev\"): picks skills from entailment, takes orders in chat, sees through the prismarine-viewer",
+  "license": "MIT",
+  "type": "commonjs",
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "bot": "node bot/skill_server.js",
+    "view": "node bot/shot.js",
+    "probe": "node bot/probe.js",
+    "player": "node bot/fake_player.js"
+  },
+  "dependencies": {
+    "@napi-rs/canvas": "^1.0.9",
+    "mineflayer": "^4.39.0",
+    "mineflayer-pathfinder": "^2.4.5",
+    "prismarine-viewer": "^1.33.0",
+    "puppeteer-core": "^25.11.0"
+  }
+}

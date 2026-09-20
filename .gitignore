@@ -1,0 +1,22 @@
+# artefatos de execução — nada disso vai pro repo
+node_modules/
+venv/
+venv-*/
+__pycache__/
+*.pyc
+
+# modelos: baixados e convertidos localmente (GB)
+models/
+*.gguf
+*.safetensors
+
+# servidor de teste local: mundo, jar, listas de ops/ban
+server/
+
+# saídas de execução
+shots/
+logs/
+
+# credenciais e configs locais
+.env
+*.local
